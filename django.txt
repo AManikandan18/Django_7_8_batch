@@ -1,0 +1,318 @@
+What is Django:
+    * Django is a high-level Python web framework for building fast, 
+    secure, scalable web applications.
+    * It has some ready made features.so we can create web app-ai(fast build)
+
+Why Django:
+    Django follows MVT Architecture:
+        Model --> Database Logic
+        View --> Python Logic
+        Templates --> Html UI-(User Interface)
+
+Django Advantages:
+
+    🎯 Fast development
+
+    🔒 Security (SQL Injection protection → built-in)
+
+    🧩 ORM (Python code → SQL auto convert)
+
+    🏗 Admin panel automatically available
+
+    🌐 Scalability
+
+
+Migtrations:
+
+What is Migtrations:
+    Django uses migrations to create and update database tables 
+automatically based on your models.py.
+
+Makemigrations:
+
+What is Makemigrations:
+    makemigrations checks models.py and creates a migration file.
+Why Makemigrations:
+    Because Django needs instructions about:
+        *create a new table
+        *Add a column
+        *Alter a column
+        *Delete.
+
+Migrate:
+What is Migrate:
+    migrate applies migration files to your database.
+Why Migrate:
+    create or update the tables in database.
+
+| Command               | Meaning                | Purpose              |
+| --------------------- | ---------------------- | -------------------- |
+| **makemigrations**    | Create migration files | Detect model changes |
+| **migrate**           | Apply migrations       | Update DB tables     |
+| **showmigrations**    | List migrations        | See which applied    |
+| **migrations folder** | Stores migration files | Track DB history     |
+
+Middlewares :
+-------------
+    Middleware is a request/response filter layer in Django.
+
+    Example:
+        Request → Middleware → View → Middleware → Response → Browser
+
+    Middleware is like a security guard, checker, modifier, validator
+    between the browser and Django view.
+
+Why Middleware :
+----------------
+    Security(Authentication,Permissions)
+    Request Validation
+    Performance(timing request)
+    Changing Language(Localization)
+    Cookie / Session handling
+    Processing before view
+    Changing response before sending
+
+What is ORM :
+-------------
+    ORM = Object Relational Mapper
+    Meaning:
+        *Django converts Python code → SQL queries
+        *You no need to write SQL manually
+
+#Joins Types:
+# OneToOne
+# OneToMany
+# ManyToOne
+# ManyToMany
+
+1.Queryset :
+------------
+    A QuerySet is a collection of database rows returned by Django ORM 
+    in Python object format.
+    
+    #QuerySet:
+    # data = Student.objects.all()
+    # print("Object Format : ",data)
+
+2.Select Related:
+-----------------
+    select_related() performs a SQL JOIN and fetches related objects in one single query.
+
+    Use it when:
+        *You have ForeignKey
+        *You have OneToOneField
+
+class Department(models.Model):
+    name = models.CharField(max_length=50)
+
+class Employee(models.Model):
+    name = models.CharField(max_length=50)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+| Department | Employees  |
+| ---------- | ---------- |
+| IT         | Mani, Arun |
+| HR         | Kumar      |
+
+3.Prefetch Related:
+    prefetch_related() fetches related objects in multiple queries but 
+    combines them in Python memory.
+
+    Use it when:
+        *ManyToManyField
+        *Reverse ForeignKey (one-to-many)
+        *Related managers (e.g. book.authors.all())
+
+
+#Department:
+    # 1.IT
+    # 2.HR
+    
+# Employees:
+    # 1.John -> IT
+    # 2.Arun -> IT
+    # 3.Kumar -> HR
+
+#Without Select Related for (OneToOne Relationship(Joins)):
+#----------------------------------------------------------
+
+# employees = Employee.objects.all() #select * from Employee; #1
+# for e in employees:
+#     print(e.department.name)  #Select name from department where id = 1;
+                              #select name from department where id = 1;
+                              #Select name from department where id = 2; #N
+
+# Ravi (dept_id=1) HR
+# Kumar (dept_id=1) HR
+# Arjun (dept_id=2) IT
+
+# Browser
+#   ↓
+# Employee Query  ───────────────► 1 query
+#   ↓
+# Loop starts
+#   ├─ Department Query (IT) ────► 1 query
+#   ├─ Department Query (IT) ────► 1 query
+#   └─ Department Query (HR) ────► 1 query
+
+# TOTAL = 1 + N queries (N = no. of employees)
+
+
+
+# With Select Related:
+# employees = Employee.objects.select_related('department')
+
+# SELECT employee.*, department.*
+# FROM employee
+# INNER JOIN department
+# ON employee.department_id = department.id;
+
+
+# for e in employees:
+#     print(e.department.name)
+    
+# Browser
+#   ↓
+# Employee + Department JOIN Query ───► 1 query
+#   ↓
+# Loop prints data (NO DB calls)
+
+
+Without Prefetch related:
+
+    Browser / View
+      |
+      |---- Query 1 ----> Book Table
+      |
+      |---- Query 2 ----> Author Table (Book 1)
+      |
+      |---- Query 3 ----> Author Table (Book 2)
+      |
+      |---- Query 4 ----> Author Table (Book 3)
+      
+Total Queries = 1 + N
+
+
+with prefetch_related :
+
+Browser / View
+      |
+      |---- Query 1 ----> Book Table
+      |
+      |---- Query 2 ----> Author + M2M Table
+      |
+      |---- Python Memory Join
+      |
+      |---- Loop prints data (NO DB CALLS)
+      
+Total Queries = 2
+
+    
+# books = Book.objects.all() #1 query for books (select * from book;)
+# for b in books:
+#     print(b.authors.all()) #N queries for each book’s authors
+    
+    # SELECT * FROM author WHERE book_id = 1;
+    # SELECT * FROM author WHERE book_id = 2;
+    # SELECT * FROM author WHERE book_id = 3;
+    
+    
+# books = Book.objects.prefetch_related('authors')
+# for b in books:
+#     print(b.authors.all())
+    
+#    1. SELECT * FROM book;
+#    2. SELECT * FROM author 
+#       INNER JOIN book_authors
+#       WHERE book_id IN (1, 2, 3);
+
+# ✔ Only 2 queries
+# ✔ No DB hit inside loop
+
+
+What is DRF:
+------------
+    Django REST Framework (DRF) is an extension of Django that makes building APIs easier.
+It helps convert Django models into RESTful APIs that can be used by web apps, mobile apps, or other services.
+
+    REST - Representational State Transfer
+
+Serialization: 
+    Converts complex data, such as Django models or querysets, into JSON or XML format.
+
+Viewsets :
+    Define views that handle API requests and responses.
+
+DefaultRouter():
+What is DefaultRouter?
+    is a URL router provided by Django REST Framework.
+
+Its job is to:
+
+    *Automatically create URL patterns
+    *Map URLs to ViewSet actions
+    *Reduce manual path() writing
+--> It is mainly used with ViewSets.
+
+Without a router :
+    path('students/', StudentListView.as_view()),
+    ('students/<int:id>/', StudentDetailView.as_view()),
+
+With a router:
+    router.register('Students', StudentViewSet)
+    One line = all CRUD URLs.
+
+Pagination :
+------------
+    Splitting large data into small pages instead of showing everythink at once.
+
+Why do we need Pagination:
+    Without pagination:
+        *Loads thousands of records
+        *Slow response
+        *Poor user experience
+
+    With pagination :
+        *Faster loading
+        *Less memory usage
+        *Clean UI
+        *Better performance
+
+| Without Pagination   | With Pagination      |
+| -------------------- | -------------------- |
+| All students at once | 10 students per page |
+| Slow website         | Fast website         |
+| Hard to scroll       | Easy navigation      |
+
+
+Signals :
+    A Signal is used to notify when something happens in Django.
+    When one action happens, Django automatically triggers another action.
+
+Real Example :
+    User is created ➝ create profile
+    Student saved ➝ send email
+    Order placed ➝ reduce stock
+
+WHERE are Signals Used?
+Signals are used in:
+    models.py
+    signals.py
+    Connected in apps.py
+
+Common Django Signals :
+-----------------------
+
+Signal	      Trigger
+------        --------
+pre_save	  Before saving
+post_save	  After saving
+pre_delete	  Before deleting
+post_delete	  After deleting
+
+Student_signal.objects.create(name="Arul",age = 23)
+
+sender = Student_signal
+instance = Student_signal object (Arul,23)
+created = True/False
+
