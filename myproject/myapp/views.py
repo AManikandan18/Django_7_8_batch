@@ -1,15 +1,15 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from myapp.models import Student,Department,Employee,Author,Book,Student_ser,Student_Signals
-from .serializers import StudentSerializer
-
-from rest_framework.viewsets import ModelViewSet
+##from django.shortcuts import render
+##from django.http import HttpResponse
+##from myapp.models import Student,Department,Employee,Author,Book,Student_ser,Student_Signals
+##from .serializers import StudentSerializer
+##
+##from rest_framework.viewsets import ModelViewSet
 # from rest_framework import viewsets
 
 # Create your views here.
 
-def home(request):
-    return HttpResponse("Welcome to Django")
+##def home(request):
+##    return HttpResponse("Welcome to Django")
 
 #Insert:
 # Student.objects.create(name = "Arul Prakash",age = 23)
@@ -118,12 +118,28 @@ def home(request):
 # ✔ No DB hit inside loop
 
 
-class StudentViewSet(ModelViewSet):
-    queryset = Student_ser.objects.all() #For Read All Data(Display)
-    serializer_class = StudentSerializer
+##class StudentViewSet(ModelViewSet):
+##    queryset = Student_ser.objects.all() #For Read All Data(Display)
+##    serializer_class = StudentSerializer
 
 # Student_ser.objects.create(name = 'kavin',age = 23,course = 'Java')
 
 
 # Signals Value Inserted:
 # Student_Signals.objects.create(name = "Arul",age = 22)
+Student_Signals.objects.create(name = "Kumar",age=23)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
